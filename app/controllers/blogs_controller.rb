@@ -24,30 +24,20 @@ class BlogsController < ApplicationController
   # POST /blogs
   # POST /blogs.json
   def create
-    @blog = Blog.new(blog_params)
-
-    respond_to do |format|
-      if @blog.save
-        format.html { redirect_to @blog, notice: 'Blog was successfully created.' }
-        format.json { render :show, status: :created, location: @blog }
-      else
-        format.html { render :new }
-        format.json { render json: @blog.errors, status: :unprocessable_entity }
-      end
+    if @blog = Blog.create(blog_params)
+      redirect_to blogs_path
+    else
+      render :new
     end
   end
 
   # PATCH/PUT /blogs/1
   # PATCH/PUT /blogs/1.json
   def update
-    respond_to do |format|
-      if @blog.update(blog_params)
-        format.html { redirect_to @blog, notice: 'Blog was successfully updated.' }
-        format.json { render :show, status: :ok, location: @blog }
-      else
-        format.html { render :edit }
-        format.json { render json: @blog.errors, status: :unprocessable_entity }
-      end
+    if @blog.update(blog_params)
+      redirect_to blogs_path, notice: "ブログを編集しました！"
+    else
+      render :edit
     end
   end
 
@@ -55,10 +45,7 @@ class BlogsController < ApplicationController
   # DELETE /blogs/1.json
   def destroy
     @blog.destroy
-    respond_to do |format|
-      format.html { redirect_to blogs_url, notice: 'Blog was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+
   end
 
   private
@@ -69,6 +56,6 @@ class BlogsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def blog_params
-      params.fetch(:blog, {})
+      params.require(:blog).permit(:title, :content)
     end
 end
